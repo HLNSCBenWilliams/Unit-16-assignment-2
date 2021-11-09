@@ -1,3 +1,4 @@
+# import files from assets folder - turn assets into module?
 import os
 import sys
 
@@ -6,16 +7,23 @@ sys.path.insert(1, "assets/")
 
 from GUI import *
 
+
+# is the user logged into an account that exists
 isLoggedin = False
 
+# the current and previous page
 navPage = "Login page"
 prevPage = "Login page"
 
+# change default font
 ChangeFontName("RedHatMono.ttf")
 
+# customer storage file and currently selected customer
 customersFile = "customers.json"
 currentCustomerID = None
 
+
+# login page
 class Login:
 	def __init__(self, rect, colors):
 		self.rect = pg.Rect(rect)
@@ -23,15 +31,19 @@ class Login:
 		self.borderColor = colors[1]
 		self.activeColor = colors[2]
 		self.inactiveColor = colors[3]
+		# where user accounts are stored
 		self.userDetails = "userDetails.json"
 
 		self.userNameForgroundColor = self.inactiveColor
 		self.passwordForgroundColor = self.inactiveColor
 
 		self.title = Label((self.rect.x + 300, self.rect.y + 10, self.rect.w - 600, self.rect.h // 2 - 60), (self.backgroundColor, self.borderColor), text="Login", textData={"fontSize": 90}, lists=[])
+
 		self.userNameInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 - 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, inputData={"splashText": "User name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"}, lists=[])
 		self.passwordInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 + 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, inputData={"splashText": "Password: ", "charLimit": 50, "allowedKeysFile": "passwordKeys.txt"}, lists=[])
+
 		self.submitButton = Button((self.rect.x + self.rect.w - 210, self.rect.y + self.rect.h // 2 + 110, 200,  55), (self.backgroundColor, self.borderColor, self.activeColor), onClick=self.Submit, text="Log in", textData={"fontSize": 30}, lists=[])
+
 		self.messageBox = Label((self.rect.x + 10, self.rect.y + self.rect.h // 2 + 110, self.rect.w - 230,  55), (self.backgroundColor, self.borderColor), text="Please enter a user name and password.", textData={"fontSize": 30, "alignText": "left"}, lists=[])
 
 		self.userName = None
@@ -144,6 +156,7 @@ class Login:
 			file.close()
 
 
+# navigation object used in a navigation menu
 class NavItem(Button):
 	def __init__(self, index, text, action=None):
 		self.index = index
@@ -164,6 +177,7 @@ class NavigationMenu:
 		self.navItems = navItems
 		self.CreateNavItems()
 
+	# give navItems a rect and color
 	def CreateNavItems(self):
 		xCounter = 0
 		yCounter = 0
@@ -173,7 +187,9 @@ class NavigationMenu:
 				xCounter = 0
 				yCounter += 1
 
-			rect = ((xCounter * (self.rect.w // 5) + 3), self.rect.y + (6 * (yCounter + 1)) + (yCounter * 68), (self.rect.w // 5) - 6, 68)
+			h = 68
+			xOffset = 3
+			rect = ((xCounter * (self.rect.w // 5) + xOffset), self.rect.y + ((xOffset * 2) * (yCounter + 1)) + (yCounter * h), (self.rect.w // 5) - (xOffset * 2), h)
 
 			xCounter += 1
 
@@ -191,6 +207,7 @@ class NavigationMenu:
 			item.HandleEvent(event)
 
 
+# show details about an object
 class DetailsPage:
 	def __init__(self, rect, colors, titleText="", messageText="", messageBoxRect=None):
 		self.rect = pg.Rect(rect)
@@ -198,10 +215,12 @@ class DetailsPage:
 		self.borderColor = colors[1]
 
 		self.title = Label((self.rect.x + 30, self.rect.y + 10, self.rect.w - 60, self.rect.h // 2 - 120), (self.backgroundColor, self.borderColor), text=titleText, textData={"fontSize": 70}, lists=[])
+
 		if messageBoxRect == None:
 			rect = (self.rect.x + 10, self.rect.y + 100, self.rect.w - 20, self.rect.h - 110)
 		else:
 			rect = messageBoxRect
+
 		self.messageBox = Label(rect, (self.backgroundColor, self.borderColor), text=messageText, textData={"fontSize": 30, "alignText": "left-top", "multiline": True}, lists=[])
 
 	def Draw(self):
@@ -215,6 +234,7 @@ class DetailsPage:
 		self.messageBox.UpdateText(text)
 
 
+# edit details of an object
 class EditPage(DetailsPage):
 	def __init__(self, rect, colors, titleText="", messageText="", action=None, inputData={}):
 		super().__init__(rect, colors, titleText, messageText, (rect[0] + 10, rect[1] + 100, rect[2] - 20, 60))
@@ -234,6 +254,7 @@ class EditPage(DetailsPage):
 		self.submit.HandleEvent(event)
 
 
+# create a new user
 class CreateUserPage(DetailsPage):
 	def __init__(self, rect, colors, titleText="", messageText="", userInputData={}, passwordInputData={}):
 		super().__init__(rect, colors, titleText, messageText, messageBoxRect=(rect[0] + 10, rect[1] + 250, rect[2] - 135, 135))
@@ -262,9 +283,10 @@ class CreateUserPage(DetailsPage):
 			self.UpdateMessage("User created.\nYou can now login.")
 			login.CreateUser(self.userName.input, self.password.input)
 		else:
-			self.UpdateMessage("Username or password is not filled.")
+			self.UpdateMessage("User name or password is not filled.")
 
 
+# create a new customer
 class CreateCustomerPage(DetailsPage):
 	def __init__(self, rect, colors, titleText="", messageText="", nameInputData={}, balanceInputData={}):
 		super().__init__(rect, colors, titleText, messageText, messageBoxRect=(rect[0] + 10, rect[1] + 250, rect[2] - 135, 135))
@@ -366,6 +388,7 @@ class CreateCustomerPage(DetailsPage):
 		customerBrowserPage.GetCustomers()
 
 
+# view all customers - add scrolling?
 class CustomerBrowserPage(DetailsPage):
 	def __init__(self, rect, colors, titleText="", messageText="", inputData={}):
 		super().__init__(rect, colors, titleText, messageText, (rect[0] + 10, rect[1] + 100, rect[2] - 20, rect[3] - 180))
@@ -418,11 +441,13 @@ class CustomerBrowserPage(DetailsPage):
 		self.GetCustomers()
 
 
+# customer stores name and balance for a customer
 class Customer(Label):
 	def __init__(self, rect, colors, name, balance, ID):
 		super().__init__(rect, colors, f"Name:{name}\nBal:{balance}\nID:{ID}", textData={"multiline": True, "alignText": "left-top", "fontSize": 15}, lists=[])
 
 
+# get a customer with only the ID of the customer
 def GetCustomer(ID):
 	with open(customersFile, "r") as file:
 		data = json.load(file)
@@ -439,6 +464,7 @@ def Quit():
 	running = False
 
 
+# go to the previous page / home page
 def Back():
 	global navPage
 	navPage = prevPage
@@ -447,27 +473,38 @@ def Back():
 def DrawLoop():
 	screen.fill(darkGray)
 
+	# only draw for current page - change to active surfaces?
+
 	if navPage == "Login page":
 		login.Draw()
 		createUserButton.Draw()
+
 	elif navPage == "User details":
 		userDetailsPage.Draw()
 		if login.ID != 0:
 			deleteAccount.Draw()
+
 	elif navPage == "Edit user name":
 		userNameEditPage.Draw()
+
 	elif navPage == "Edit password":
 		userPasswordPage.Draw()
+
 	elif navPage == "Change current customer":
 		customerBrowserPage.Draw()
+
 	elif navPage == "Customer details":
 		customerDetailsPage.Draw()
+
 	elif navPage == "Edit customer name":
 		customerNameEditPage.Draw()
+
 	elif navPage == "Edit customer balance":
 		customerBalancePage.Draw()
+
 	elif navPage == "Create user page":
 		createUserPage.Draw()
+
 	elif navPage == "Create customer page":
 		createCustomerPage.Draw()
 
@@ -484,24 +521,34 @@ def DrawLoop():
 def HandleEvents(event):
 	HandleGui(event)
 
+	# only handle events for current page - change to active surfaces?
+
 	if navPage == "Login page":
 		login.HandleEvent(event)
 		createUserButton.HandleEvent(event)
+
 	elif navPage == "User details":
 		if login.ID != 0:
 			deleteAccount.HandleEvent(event)
+
 	elif navPage == "Edit user name":
 		userNameEditPage.HandleEvent(event)
+
 	elif navPage == "Edit password":
 		userPasswordPage.HandleEvent(event)
+
 	elif navPage == "Change current customer":
 		customerBrowserPage.HandleEvent(event)
+
 	elif navPage == "Edit customer name":
 		customerNameEditPage.HandleEvent(event)
+
 	elif navPage == "Edit customer balance":
 		customerBalancePage.HandleEvent(event)
+
 	elif navPage == "Create user page":
 		createUserPage.HandleEvent(event)
+
 	elif navPage == "Create customer page":
 		createCustomerPage.HandleEvent(event)
 
@@ -510,6 +557,8 @@ def HandleEvents(event):
 		if navPage != "Create user page":
 			navMenu.HandleEvent(event)
 
+
+# change to a different page
 
 def NewUserPage():
 	global navPage, prevPage
@@ -584,35 +633,55 @@ def EditCustomerBalancePage():
 		customerBalancePage.UpdateMessage(f"No customer selected.")
 
 
+# create gui objects
+
+# exit program
 exit = Button((width - 210, height - 60, 200, 50), (lightBlack, darkWhite, lightBlue), onClick=Quit, text="Quit")
 
+# previous page
 back = Button((width - 420, height - 60, 200, 50), (lightBlack, darkWhite, lightBlue), onClick=Back, text="Back", lists=[])
 
 
+# login page
 login = Login((10, 100, width - 20, 400), (lightBlack, darkWhite, lightBlue, darkWhite))
+# new user page
 createUserButton = Button((width - 410, height - 200, 400, 50), (lightBlack, darkWhite, lightBlue), onClick=NewUserPage, text="Create new user", lists=[])
 createUserPage = CreateUserPage((10, 100, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Create new user", "Please enter a user name and password.", userInputData={"splashText": "User name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"}, passwordInputData={"splashText": "Password: ", "charLimit": 50, "allowedKeysFile": "passwordKeys.txt"})
 
-
+# new customer page
 createCustomerPage = CreateCustomerPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Create new customer", "Please enter a name and balance.", nameInputData={"splashText": "Customer name:", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"}, balanceInputData={"splashText": "Balance: £", "charLimit": 50, "allowedKeysFile": "numberKeys.txt"})
 customerBrowserPage = CustomerBrowserPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Choose a customer", inputData={"splashText": "ID: ", "charLimit": 3, "allowedKeysFile": "numberKeys.txt"})
 
 
-navs = [NavItem(0, "Log out", login.LogoutUser), NavItem(1, "Get user\ndetails", UserDetailsPage), NavItem(2, "Edit user\nname", EditUserNamePage), NavItem(3, "Edit user\npassword", EditPasswordPage), NavItem(4, "New customer", NewCustomerPage), NavItem(5, "Change current\ncustomer", ChangeCurrentCustomerPage), NavItem(6, "Customer details", CustomerDetailsPage), NavItem(7, "Edit customer\nname", EditCustomerNamePage), NavItem(8, "Edit customer\nbalance", EditCustomerBalancePage), NavItem(9, "Delete current\nuser", createCustomerPage.DeleteCustomer)]
+# navigation options
+navs = [
+	NavItem(0, "Log out", login.LogoutUser),
+	NavItem(1, "Get user\ndetails", UserDetailsPage),
+	NavItem(2, "Edit user\nname", EditUserNamePage),
+	NavItem(3, "Edit user\npassword", EditPasswordPage),
+	NavItem(4, "New customer", NewCustomerPage),
+	NavItem(5, "Change current\ncustomer", ChangeCurrentCustomerPage),
+	NavItem(6, "Customer details", CustomerDetailsPage),
+	NavItem(7, "Edit customer\nname", EditCustomerNamePage),
+	NavItem(8, "Edit customer\nbalance", EditCustomerBalancePage),
+	NavItem(9, "Delete current\nuser", createCustomerPage.DeleteCustomer)
+]
+
 navMenu = NavigationMenu((0, 0, width, 160), (lightBlack, darkWhite), navs)
 
 
+# user details
 userDetailsPage = DetailsPage((10, 180, width - 20, 400), (lightBlack, darkWhite), "Your details")
 deleteAccount = Button((width - 430, height - 210, 400, 50), (lightBlack, darkWhite, lightBlue), onClick=login.DeleteUser, text="Delete account", lists=[])
 
-
+# customer details
 customerDetailsPage = DetailsPage((10, 180, width - 20, 400), (lightBlack, darkWhite), "Customer details")
 
-
+# change user details
 userNameEditPage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit user name", action=login.ChangeUserName, inputData={"splashText": "New user name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"})
 userPasswordPage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit password", action=login.ChangePassword, inputData={"splashText": "New password: ", "charLimit": 50, "allowedKeysFile": "passwordKeys.txt"})
 
-
+# change customer details
 customerNameEditPage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit customer name", action=createCustomerPage.ChangeName, inputData={"splashText": "New customer name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"})
 customerBalancePage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit customer balance", action=createCustomerPage.ChangeBalance, inputData={"splashText": "New customer balance: £", "charLimit": 50, "allowedKeysFile": "numberKeys.txt"})
 
