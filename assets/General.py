@@ -12,6 +12,7 @@ all2DVectors = []
 all3DVectors = []
 numGrids = []
 
+
 class Wait:
 	def __init__(self, duration):
 		self.duration = duration
@@ -289,6 +290,7 @@ class Vec3(Vec2):
 	def RotateDegrees(self, angle, distanceToRotPoint, pointOfRot=None):
 		pass
 
+
 # used to time how long a function takes to run
 class Timer:
 	def __init__(self):
@@ -393,6 +395,7 @@ class Timer:
 		return (startTime, endTime, average)
 
 
+# 2d array of numbers
 class NumGrid:
 	def __init__(self, gridSize, gridFunc=None, lists=[numGrids]):
 		self.gridSize = gridSize
@@ -418,6 +421,7 @@ def Lerp(v0, v1, t):
 	return v0 + t * (v1 - v0)
 
 
+# add an object to a list or a dict
 def AddToListOrDict(lists, obj):
 	for listToAppend in lists:
 		if type(listToAppend) == list:
@@ -434,8 +438,10 @@ def AddToListOrDict(lists, obj):
 				listToAppend[type(obj)] = obj
 
 
+# return the current time with a default format
 def NowFormatted(timeFormat="%d/%m/%y %H:%M:%S"):
 	return dt.datetime.now().strftime(timeFormat)
+
 
 if __name__ == "__main__":
 	pass
