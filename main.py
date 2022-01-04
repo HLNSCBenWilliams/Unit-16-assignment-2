@@ -39,8 +39,8 @@ class Login:
 
 		self.title = Label((self.rect.x + 300, self.rect.y + 10, self.rect.w - 600, self.rect.h // 2 - 60), (self.backgroundColor, self.borderColor), text="Login", textData={"fontSize": 90}, lists=[])
 
-		self.userNameInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 - 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, inputData={"splashText": "User name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"}, lists=[])
-		self.passwordInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 + 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, inputData={"splashText": "Password: ", "charLimit": 50, "allowedKeysFile": "passwordKeys.txt"}, lists=[])
+		self.userNameInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 - 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, splashText="User name: ", inputData={"charLimit": 50, "allowedKeysFile": "userNameKeys.txt"}, lists=[])
+		self.passwordInput = TextInputBox((self.rect.x + 10, self.rect.y + self.rect.h // 2 + 35, self.rect.w - 20, 55), (self.backgroundColor, self.borderColor, self.activeColor), drawData={"replaceSplashText": False}, textData={"alignText": "left", "fontSize": 30}, splashText="Password: ", inputData={"charLimit": 50, "allowedKeysFile": "passwordKeys.txt"}, lists=[])
 
 		self.submitButton = Button((self.rect.x + self.rect.w - 210, self.rect.y + self.rect.h // 2 + 110, 200,  55), (self.backgroundColor, self.borderColor, self.activeColor), onClick=self.Submit, text="Log in", textData={"fontSize": 30}, lists=[])
 
@@ -164,7 +164,7 @@ class NavItem(Button):
 		self.action = action
 
 	def Create(self, rect, colors, onClick, text="", name=""):
-		super().__init__(rect, colors, onClick=onClick, text=text, name=name, textData={"multiline": True if "\n" in text else False, "fontSize": 20, "alignText": "top" if "\n" in text else "center"}, lists=[])
+		super().__init__(rect, colors, onClick=onClick, text=text, name=name, textData={"fontSize": 20, "alignText": "top" if "\n" in text else "center"}, lists=[])
 
 
 class NavigationMenu:
@@ -190,7 +190,6 @@ class NavigationMenu:
 			h = 68
 			xOffset = 3
 			rect = ((xCounter * (self.rect.w // 5) + xOffset), self.rect.y + ((xOffset * 2) * (yCounter + 1)) + (yCounter * h), (self.rect.w // 5) - (xOffset * 2), h)
-
 			xCounter += 1
 
 			item.Create(rect, (self.backgroundColor, self.borderColor, lightBlue), item.action, item.text, str(item.index))
@@ -447,6 +446,58 @@ class Customer(Label):
 		super().__init__(rect, colors, f"Name:{name}\nBal:{balance}\nID:{ID}", textData={"multiline": True, "alignText": "left-top", "fontSize": 15}, lists=[])
 
 
+class HelpPage(Label):
+	def __init__(self, rect, colors, helpFiles=[], text="", name="", drawData={}, textData={"alignText": "top"}, lists=[]):
+		super().__init__(rect, colors, text, name, screen, drawData, textData, lists)
+		self.helpFilesText = []
+
+		for file in helpFiles:
+			self.helpFilesText.append(OpenFile(file))
+
+		self.inexpHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, 125), colors, text="Help 1", onClick=self.ShowInexpHelp, lists=[])
+		self.expHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, 125), colors, text="Help 2", onClick=self.ShowExpHelp, lists=[])
+		self.expertHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, 125), colors, text="Help 3", onClick=self.ShowExpertHelp, lists=[])
+
+		self.helpPage = None
+
+	def Draw(self):
+		self.DrawBackground()
+		self.DrawBorder()
+		self.DrawText()
+
+		if self.helpPage != None:
+			self.helpPage.Draw()
+		else:
+			self.inexpHelp.Draw()
+			self.expHelp.Draw()
+			self.expertHelp.Draw()
+
+	def HandleEvent(self, event):
+		if self.helpPage == None:
+			self.inexpHelp.HandleEvent(event)
+			self.expHelp.HandleEvent(event)
+			self.expertHelp.HandleEvent(event)
+
+	def ShowInexpHelp(self):
+		global prevPage
+		prevPage = "Help Page"
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[0], lists=[], textData={"alignText": "left-top"})
+
+	def ShowExpHelp(self):
+		global prevPage
+		prevPage = "Help Page"
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[1], lists=[], textData={"alignText": "left-top"})
+
+	def ShowExpertHelp(self):
+		global prevPage
+		prevPage = "Help Page"
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[2], lists=[], textData={"alignText": "left-top"})
+
+	def Back(self):
+		global prevPage
+		prevPage = "Home"
+		self.helpPage = None
+
 # get a customer with only the ID of the customer
 def GetCustomer(ID):
 	with open(customersFile, "r") as file:
@@ -468,12 +519,14 @@ def Quit():
 def Back():
 	global navPage
 	navPage = prevPage
+	if prevPage == "Help Page":
+		hp.Back()
 
 
 def DrawLoop():
 	screen.fill(darkGray)
 
-	# only draw for current page - change to active surfaces?
+	# only draw for current page
 
 	if navPage == "Login page":
 		login.Draw()
@@ -508,10 +561,14 @@ def DrawLoop():
 	elif navPage == "Create customer page":
 		createCustomerPage.Draw()
 
+	elif navPage == "Help Page":
+		hp.Draw()
+
 	if navPage != "Login page":
 		back.Draw()
 		if navPage != "Create user page":
 			navMenu.Draw()
+
 
 	DrawAllGUIObjects()
 
@@ -551,6 +608,9 @@ def HandleEvents(event):
 
 	elif navPage == "Create customer page":
 		createCustomerPage.HandleEvent(event)
+
+	elif navPage == "Help Page":
+		hp.HandleEvent(event)
 
 	if navPage != "Login page":
 		back.HandleEvent(event)
@@ -611,6 +671,12 @@ def CustomerDetailsPage():
 		customerDetailsPage.UpdateMessage(f"No customer selected.")
 
 
+def ChangeHelpPage():
+	global navPage, prevPage
+	prevPage = "Home"
+	navPage = "Help Page"
+
+
 def EditCustomerNamePage():
 	global navPage, prevPage
 	prevPage = "Home"
@@ -656,15 +722,15 @@ customerBrowserPage = CustomerBrowserPage((10, 180, width - 20, 400), (lightBlac
 # navigation options
 navs = [
 	NavItem(0, "Log out", login.LogoutUser),
-	NavItem(1, "Get user\ndetails", UserDetailsPage),
-	NavItem(2, "Edit user\nname", EditUserNamePage),
-	NavItem(3, "Edit user\npassword", EditPasswordPage),
+	NavItem(1, "Get user details", UserDetailsPage),
+	NavItem(2, "Edit user name", EditUserNamePage),
+	NavItem(3, "Edit user password", EditPasswordPage),
 	NavItem(4, "New customer", NewCustomerPage),
-	NavItem(5, "Change current\ncustomer", ChangeCurrentCustomerPage),
+	NavItem(5, "\nChange current\ncustomer", ChangeCurrentCustomerPage),
 	NavItem(6, "Customer details", CustomerDetailsPage),
-	NavItem(7, "Edit customer\nname", EditCustomerNamePage),
-	NavItem(8, "Edit customer\nbalance", EditCustomerBalancePage),
-	NavItem(9, "Delete current\nuser", createCustomerPage.DeleteCustomer)
+	NavItem(7, "Edit customer name", EditCustomerNamePage),
+	NavItem(8, "\nEdit customer\nbalance", EditCustomerBalancePage),
+	NavItem(9, "Delete current user", createCustomerPage.DeleteCustomer)
 ]
 
 navMenu = NavigationMenu((0, 0, width, 160), (lightBlack, darkWhite), navs)
@@ -684,6 +750,9 @@ userPasswordPage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, 
 # change customer details
 customerNameEditPage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit customer name", action=createCustomerPage.ChangeName, inputData={"splashText": "New customer name: ", "charLimit": 50, "allowedKeysFile": "userNameKeys.txt"})
 customerBalancePage = EditPage((10, 180, width - 20, 400), (lightBlack, darkWhite, lightBlue), "Edit customer balance", action=createCustomerPage.ChangeBalance, inputData={"splashText": "New customer balance: £", "charLimit": 50, "allowedKeysFile": "numberKeys.txt"})
+
+openHp = Button((10, height - 60, 200, 50), (lightBlack, darkWhite, lightBlue), text="Help", onClick=ChangeHelpPage)
+hp = HelpPage((10, 180, width - 20, 450), (lightBlack, darkWhite, lightBlue), ["help1.txt", "help2.txt", "help3.txt"], text="Help")
 
 
 while running:
