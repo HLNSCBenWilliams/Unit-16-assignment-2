@@ -1,5 +1,9 @@
-Help 2
+Experienced help
 - Login to the program with a username and password.
 - If you do not have a username or password press the 'Create new user'.
-- Once you have logged in you can select what task you want to do at the top of the
-screen.
+- Enter a username into the promt.
+- Enter a password into the promt.
+- Then press the button that says 'Submit'.
+- You have now created an account and go back to the login page.
+- Once you have logged in you can select what task you want to do by clicking the buttons at the top of the screen.
+

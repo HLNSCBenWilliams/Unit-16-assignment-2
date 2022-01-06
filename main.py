@@ -450,19 +450,23 @@ class HelpPage(Label):
 	def __init__(self, rect, colors, helpFiles=[], text="", name="", drawData={}, textData={"alignText": "top"}, lists=[]):
 		super().__init__(rect, colors, text, name, screen, drawData, textData, lists)
 		self.ogRect = self.rect
+
+		# help text
 		self.helpFilesText = []
 
 		for file in helpFiles:
 			self.helpFilesText.append(OpenFile(file))
 
-		self.inexpHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 1", onClick=self.ShowInexpHelp, lists=[])
-		self.expHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 2", onClick=self.ShowExpHelp, lists=[])
-		self.expertHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 3", onClick=self.ShowExpertHelp, lists=[])
+		# used to select which help the user wants
+		self.inexpHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Inexperienced", onClick=self.ShowInexpHelp, lists=[])
+		self.expHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Experienced", onClick=self.ShowExpHelp, lists=[])
+		self.expertHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Expert", onClick=self.ShowExpertHelp, lists=[])
 		
 		self.helpPage = None
 		self.scrollBar = None
 
 	def Draw(self):
+		# update the position of the help page depending on if the user is logged in or not
 		if isLoggedin:
 			self.rect.y = self.ogRect.y
 			self.rect.h = self.ogRect.h
@@ -481,43 +485,54 @@ class HelpPage(Label):
 		self.expertHelp.UpdateText(self.expertHelp.text)
 		self.UpdateText(self.text)
 
+		# draw the help page
 		self.DrawBackground()
 		self.DrawBorder()
 		self.DrawText()
 
 		if self.helpPage != None:
+			# draw the help text if one has been selected
 			self.helpPage.Draw()
 			self.scrollBar.Draw()
 		else:
+			# draw the options of help available to the user
 			self.inexpHelp.Draw()
 			self.expHelp.Draw()
 			self.expertHelp.Draw()
 
 	def HandleEvent(self, event):
 		if self.helpPage == None:
+			# handle events for the buttons to select which help to show
 			self.inexpHelp.HandleEvent(event)
 			self.expHelp.HandleEvent(event)
 			self.expertHelp.HandleEvent(event)
 		else:
+			# handle events for the scroll bar for the help text 
 			self.scrollBar.HandleEvent(event)
 
 	def ShowInexpHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[0], lists=[], textData={"alignText": "left-top"})
-		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.inexpHelp.backgroundColor, self.inexpHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[0],
+		 lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.inexpHelp.backgroundColor, self.inexpHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack,
+		 "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def ShowExpHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[1], lists=[], textData={"alignText": "left-top"})
-		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expHelp.backgroundColor, self.expHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[1],
+		 lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expHelp.backgroundColor, self.expHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack,
+		 "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def ShowExpertHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[2], lists=[], textData={"alignText": "left-top"})
-		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expertHelp.backgroundColor, self.expertHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[2],
+		lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expertHelp.backgroundColor, self.expertHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, 
+			"inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def Back(self):
 		global prevPage
@@ -587,8 +602,6 @@ def DrawLoop():
 		elif navPage == "Edit customer balance":
 			customerBalancePage.Draw()
 
-		elif navPage == "Create user page":
-			createUserPage.Draw()
 
 		elif navPage == "Create customer page":
 			createCustomerPage.Draw()
@@ -597,6 +610,8 @@ def DrawLoop():
 			back.Draw()
 			if navPage != "Create user page":
 				navMenu.Draw()
+	if navPage == "Create user page":
+		createUserPage.Draw()
 
 	if navPage == "Help Page":
 		hp.Draw()
@@ -637,8 +652,6 @@ def HandleEvents(event):
 		elif navPage == "Edit customer balance":
 			customerBalancePage.HandleEvent(event)
 
-		elif navPage == "Create user page":
-			createUserPage.HandleEvent(event)
 
 		elif navPage == "Create customer page":
 			createCustomerPage.HandleEvent(event)
@@ -648,6 +661,9 @@ def HandleEvents(event):
 			if navPage != "Create user page":
 				navMenu.HandleEvent(event)
 
+	if navPage == "Create user page":
+		createUserPage.HandleEvent(event)
+	
 	if navPage == "Help Page":
 		hp.HandleEvent(event)
 		back.HandleEvent(event)
