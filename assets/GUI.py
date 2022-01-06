@@ -452,6 +452,9 @@ class Box:
 		else:
 			DrawRoundedRect(self.rect, (self.backgroundColor, self.foregroundColor), self.roundness, self.borderWidth, self.activeCorners, self.surface, drawBorder=self.drawBorder, drawBackground=self.drawBackground)
 
+	def UpdateRect(self, rect):
+		self.rect = pg.Rect(rect)
+
 
 class Label(Box):
 	def __init__(self, rect, colors, text="", name="", surface=screen, drawData={}, textData={}, lists=[allLabels]):
@@ -499,7 +502,11 @@ class Label(Box):
 		rect = self.rect
 		for i, t in enumerate(text):
 			textSurface = self.font.render(str(t), True, self.fontColor)
-			self.textObjs.append((textSurface, AlignText(pg.Rect(rect.x, rect.y + ((i - len(text) // 2) * textSurface.get_height()), rect.w, rect.h), textSurface, self.alignText, self.borderWidth)))
+			if "center" in self.alignText and "top" not in self.alignText:
+				y = rect.y + ((i - len(text) // 2) * textSurface.get_height())
+			else:
+				y = rect.y + (i * textSurface.get_height())
+			self.textObjs.append((textSurface, AlignText(pg.Rect(rect.x, y, rect.w, rect.h), textSurface, self.alignText, self.borderWidth)))
 			self.textHeight = textSurface.get_height()
 
 		if self.name == "test":
@@ -769,6 +776,9 @@ class TextInputBox(Label):
 		self.textSurface = self.font.render(str(self.text), True, self.fontColor)
 		self.textRect = AlignText(self.rect, self.textSurface, self.alignText, self.borderWidth)
 
+	def ClearText(self):
+		self.UpdateText("")
+
 
 class Button(Label):
 	def __init__(self, rect, colors, onClick=None, onClickArgs=[], text="", name="", surface=screen, drawData={}, textData={}, inputData={}, lists=[allButtons]):
@@ -809,7 +819,6 @@ class Button(Label):
 
 			self.t = min(max(self.t, 0), 1)
 			self.backgroundColor = LerpColor(self.ogBackgroundColor, self.backgroundColor, self.t)
-
 
 	def HandleEvent(self, event):
 		if self.rect.collidepoint(pg.mouse.get_pos()):
@@ -1008,7 +1017,6 @@ class ScollBar(Slider):
 			pass
 
 
-# progress bar
 class ProgressBar(Box):
 	def __init__(self, rect, colors, text="", name="", surface=screen, value=0, drawData={}, textData={}, headerData={}, lists=[allProgressBars]):
 		super().__init__(rect, colors, name, surface, drawData, lists)

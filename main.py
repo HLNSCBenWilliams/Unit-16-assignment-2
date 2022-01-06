@@ -449,24 +449,48 @@ class Customer(Label):
 class HelpPage(Label):
 	def __init__(self, rect, colors, helpFiles=[], text="", name="", drawData={}, textData={"alignText": "top"}, lists=[]):
 		super().__init__(rect, colors, text, name, screen, drawData, textData, lists)
+		self.ogRect = self.rect
 		self.helpFilesText = []
 
 		for file in helpFiles:
 			self.helpFilesText.append(OpenFile(file))
 
-		self.inexpHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, 125), colors, text="Help 1", onClick=self.ShowInexpHelp, lists=[])
-		self.expHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, 125), colors, text="Help 2", onClick=self.ShowExpHelp, lists=[])
-		self.expertHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, 125), colors, text="Help 3", onClick=self.ShowExpertHelp, lists=[])
-
+		self.inexpHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 1", onClick=self.ShowInexpHelp, lists=[])
+		self.expHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 2", onClick=self.ShowExpHelp, lists=[])
+		self.expertHelp = Button((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, self.rect.h / 3 - 25), colors, text="Help 3", onClick=self.ShowExpertHelp, lists=[])
+		
 		self.helpPage = None
+		self.scrollBar = None
 
 	def Draw(self):
+		if isLoggedin:
+			self.rect.y = self.ogRect.y
+			self.rect.h = self.ogRect.h
+			self.inexpHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h / 3 - 25))
+			self.inexpHelp.UpdateText(self.inexpHelp.text)
+			self.expHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, self.rect.h / 3 - 25))
+			self.expHelp.UpdateText(self.expHelp.text)
+			self.expertHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, self.rect.h / 3 - 25))
+			self.expertHelp.UpdateText(self.expertHelp.text)
+			self.UpdateText(self.text)
+		else:
+			self.rect.y = 10
+			self.rect.h = 630
+			self.inexpHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + 10), self.rect.w - 20, self.rect.h / 3 - 25))
+			self.inexpHelp.UpdateText(self.inexpHelp.text)
+			self.expHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + self.rect.h / 3 - 25 + 20), self.rect.w - 20, self.rect.h / 3 - 25))
+			self.expHelp.UpdateText(self.expHelp.text)
+			self.expertHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + (self.rect.h / 3 - 25 + 15) * 2), self.rect.w - 20, self.rect.h / 3 - 25))
+			self.expertHelp.UpdateText(self.expertHelp.text)
+			self.UpdateText(self.text)
+
 		self.DrawBackground()
 		self.DrawBorder()
 		self.DrawText()
 
 		if self.helpPage != None:
 			self.helpPage.Draw()
+			self.scrollBar.Draw()
 		else:
 			self.inexpHelp.Draw()
 			self.expHelp.Draw()
@@ -477,26 +501,35 @@ class HelpPage(Label):
 			self.inexpHelp.HandleEvent(event)
 			self.expHelp.HandleEvent(event)
 			self.expertHelp.HandleEvent(event)
+		else:
+			self.scrollBar.HandleEvent(event)
 
 	def ShowInexpHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[0], lists=[], textData={"alignText": "left-top"})
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[0], lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.inexpHelp.backgroundColor, self.inexpHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def ShowExpHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[1], lists=[], textData={"alignText": "left-top"})
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[1], lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expHelp.backgroundColor, self.expHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def ShowExpertHelp(self):
 		global prevPage
 		prevPage = "Help Page"
-		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[2], lists=[], textData={"alignText": "left-top"})
+		self.helpPage = Label((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 50, self.rect.h - (self.textHeight * len(self.textObjs) + 20)), (self.backgroundColor, self.foregroundColor), text=self.helpFilesText[2], lists=[], textData={"alignText": "left-top"})
+		self.scrollBar = ScollBar((self.helpPage.rect.x + self.helpPage.rect.w, self.helpPage.rect.y, 30, self.helpPage.rect.h), (self.expertHelp.backgroundColor, self.expertHelp.inactiveColor), self.helpPage, buttonData={"backgroundColor": lightBlack, "inactiveColor": darkWhite, "activeColor": lightRed}, lists=[])
 
 	def Back(self):
 		global prevPage
-		prevPage = "Home"
+		if isLoggedin:
+			prevPage = "Home"
+		else:
+			prevPage = "Login page"
 		self.helpPage = None
+		self.scrollBar = None
 
 # get a customer with only the ID of the customer
 def GetCustomer(ID):
@@ -532,42 +565,44 @@ def DrawLoop():
 		login.Draw()
 		createUserButton.Draw()
 
-	elif navPage == "User details":
-		userDetailsPage.Draw()
-		if login.ID != 0:
-			deleteAccount.Draw()
+	if isLoggedin:
+		if navPage == "User details":
+			userDetailsPage.Draw()
+			if login.ID != 0:
+				deleteAccount.Draw()
 
-	elif navPage == "Edit user name":
-		userNameEditPage.Draw()
+		elif navPage == "Edit user name":
+			userNameEditPage.Draw()
 
-	elif navPage == "Edit password":
-		userPasswordPage.Draw()
+		elif navPage == "Edit password":
+			userPasswordPage.Draw()
 
-	elif navPage == "Change current customer":
-		customerBrowserPage.Draw()
+		elif navPage == "Change current customer":
+			customerBrowserPage.Draw()
 
-	elif navPage == "Customer details":
-		customerDetailsPage.Draw()
+		elif navPage == "Customer details":
+			customerDetailsPage.Draw()
 
-	elif navPage == "Edit customer name":
-		customerNameEditPage.Draw()
+		elif navPage == "Edit customer name":
+			customerNameEditPage.Draw()
 
-	elif navPage == "Edit customer balance":
-		customerBalancePage.Draw()
+		elif navPage == "Edit customer balance":
+			customerBalancePage.Draw()
 
-	elif navPage == "Create user page":
-		createUserPage.Draw()
+		elif navPage == "Create user page":
+			createUserPage.Draw()
 
-	elif navPage == "Create customer page":
-		createCustomerPage.Draw()
+		elif navPage == "Create customer page":
+			createCustomerPage.Draw()
 
-	elif navPage == "Help Page":
+		if navPage != "Login page":
+			back.Draw()
+			if navPage != "Create user page":
+				navMenu.Draw()
+
+	if navPage == "Help Page":
 		hp.Draw()
-
-	if navPage != "Login page":
 		back.Draw()
-		if navPage != "Create user page":
-			navMenu.Draw()
 
 
 	DrawAllGUIObjects()
@@ -584,38 +619,40 @@ def HandleEvents(event):
 		login.HandleEvent(event)
 		createUserButton.HandleEvent(event)
 
-	elif navPage == "User details":
-		if login.ID != 0:
-			deleteAccount.HandleEvent(event)
+	if isLoggedin:
+		if navPage == "User details":
+			if login.ID != 0:
+				deleteAccount.HandleEvent(event)
 
-	elif navPage == "Edit user name":
-		userNameEditPage.HandleEvent(event)
+		elif navPage == "Edit user name":
+			userNameEditPage.HandleEvent(event)
 
-	elif navPage == "Edit password":
-		userPasswordPage.HandleEvent(event)
+		elif navPage == "Edit password":
+			userPasswordPage.HandleEvent(event)
 
-	elif navPage == "Change current customer":
-		customerBrowserPage.HandleEvent(event)
+		elif navPage == "Change current customer":
+			customerBrowserPage.HandleEvent(event)
 
-	elif navPage == "Edit customer name":
-		customerNameEditPage.HandleEvent(event)
+		elif navPage == "Edit customer name":
+			customerNameEditPage.HandleEvent(event)
 
-	elif navPage == "Edit customer balance":
-		customerBalancePage.HandleEvent(event)
+		elif navPage == "Edit customer balance":
+			customerBalancePage.HandleEvent(event)
 
-	elif navPage == "Create user page":
-		createUserPage.HandleEvent(event)
+		elif navPage == "Create user page":
+			createUserPage.HandleEvent(event)
 
-	elif navPage == "Create customer page":
-		createCustomerPage.HandleEvent(event)
+		elif navPage == "Create customer page":
+			createCustomerPage.HandleEvent(event)
 
-	elif navPage == "Help Page":
+		if navPage != "Login page":
+			back.HandleEvent(event)
+			if navPage != "Create user page":
+				navMenu.HandleEvent(event)
+
+	if navPage == "Help Page":
 		hp.HandleEvent(event)
-
-	if navPage != "Login page":
 		back.HandleEvent(event)
-		if navPage != "Create user page":
-			navMenu.HandleEvent(event)
 
 
 # change to a different page
@@ -673,7 +710,10 @@ def CustomerDetailsPage():
 
 def ChangeHelpPage():
 	global navPage, prevPage
-	prevPage = "Home"
+	if isLoggedin:
+		prevPage = "Home"
+	else:
+		prevPage = "Login page"
 	navPage = "Help Page"
 
 
