@@ -1,28 +1,5 @@
 Help 1
-1.
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
+- Login to the program with a username and password.
+- If you do not have a username or password press the 'Create new user'.
+- Once you have logged in you can select what task you want to do at the top of the
+screen.

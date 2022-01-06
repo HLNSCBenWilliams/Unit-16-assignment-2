@@ -213,7 +213,7 @@ class DetailsPage:
 		self.backgroundColor = colors[0]
 		self.borderColor = colors[1]
 
-		self.title = Label((self.rect.x + 30, self.rect.y + 10, self.rect.w - 60, self.rect.h // 2 - 120), (self.backgroundColor, self.borderColor), text=titleText, textData={"fontSize": 70}, lists=[])
+		self.title = Label((self.rect.x + 30, self.rect.y + 10, self.rect.w - 60, self.rect.h // 2 - 120), (self.backgroundColor, self.borderColor), text=titleText, textData={"fontSize": 45}, lists=[])
 
 		if messageBoxRect == None:
 			rect = (self.rect.x + 10, self.rect.y + 100, self.rect.w - 20, self.rect.h - 110)
@@ -467,22 +467,19 @@ class HelpPage(Label):
 			self.rect.y = self.ogRect.y
 			self.rect.h = self.ogRect.h
 			self.inexpHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 10, self.rect.w - 20, self.rect.h / 3 - 25))
-			self.inexpHelp.UpdateText(self.inexpHelp.text)
 			self.expHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 145, self.rect.w - 20, self.rect.h / 3 - 25))
-			self.expHelp.UpdateText(self.expHelp.text)
 			self.expertHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs)) + 280, self.rect.w - 20, self.rect.h / 3 - 25))
-			self.expertHelp.UpdateText(self.expertHelp.text)
-			self.UpdateText(self.text)
 		else:
 			self.rect.y = 10
 			self.rect.h = 630
 			self.inexpHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + 10), self.rect.w - 20, self.rect.h / 3 - 25))
-			self.inexpHelp.UpdateText(self.inexpHelp.text)
 			self.expHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + self.rect.h / 3 - 25 + 20), self.rect.w - 20, self.rect.h / 3 - 25))
-			self.expHelp.UpdateText(self.expHelp.text)
 			self.expertHelp.UpdateRect((self.rect.x + 10, self.rect.y + (self.textHeight * len(self.textObjs) + (self.rect.h / 3 - 25 + 15) * 2), self.rect.w - 20, self.rect.h / 3 - 25))
-			self.expertHelp.UpdateText(self.expertHelp.text)
-			self.UpdateText(self.text)
+
+		self.inexpHelp.UpdateText(self.inexpHelp.text)
+		self.expHelp.UpdateText(self.expHelp.text)
+		self.expertHelp.UpdateText(self.expertHelp.text)
+		self.UpdateText(self.text)
 
 		self.DrawBackground()
 		self.DrawBorder()
@@ -530,6 +527,7 @@ class HelpPage(Label):
 			prevPage = "Login page"
 		self.helpPage = None
 		self.scrollBar = None
+
 
 # get a customer with only the ID of the customer
 def GetCustomer(ID):
@@ -766,10 +764,10 @@ navs = [
 	NavItem(2, "Edit user name", EditUserNamePage),
 	NavItem(3, "Edit user password", EditPasswordPage),
 	NavItem(4, "New customer", NewCustomerPage),
-	NavItem(5, "\nChange current\ncustomer", ChangeCurrentCustomerPage),
+	NavItem(5, "Change current\ncustomer", ChangeCurrentCustomerPage),
 	NavItem(6, "Customer details", CustomerDetailsPage),
 	NavItem(7, "Edit customer name", EditCustomerNamePage),
-	NavItem(8, "\nEdit customer\nbalance", EditCustomerBalancePage),
+	NavItem(8, "Edit customer\nbalance", EditCustomerBalancePage),
 	NavItem(9, "Delete current user", createCustomerPage.DeleteCustomer)
 ]
 
